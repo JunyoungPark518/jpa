@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="EUC-KR">
+	<title>for Kakaopay</title>
+	<link rel="icon" href="./image/favicon.ico">
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+</head>
+<script>
+	var pageSubmitFn = function(value){
+		if(value === "bankList"){
+			alert("은행 목록 출력");
+			location.href="/f/bankList";
+
+		}else if(value === "sumPerBankPerYear"){
+			alert("각 년도 별 은행별 지원금액 합계");
+			location.href="/f/sumPerBankPerYear";
+
+		}else if(value === "maxPerData"){
+			alert("가장 큰 년,은행별 지원금액 합계");
+			location.href="/f/maxPerData";
+
+		}else if(value === "maxMinForKeb"){
+			alert("외환은행의 최대 최소 년도와 합계");
+			location.href="/f/maxMinForKeb";
+
+		}else if(value === "estimateValue"){
+			alert("특정 년월의 지원금액 예상");
+			location.href="/f/estimateValue";
+		}
+	};
+
+	$(document).ready(function() {
+
+		$("#callInsert").click(function(){
+			$.ajax({
+				url : "/f/insert",
+				dataType : "text",
+				success : function(data) {
+					console.log(data);
+					$("#insertSuccess").style.visibility="visible";
+<!--					document.all.cattery.style.visibility="visible";-->
+
+				},
+				error : function(e) {
+					console.log(e.responseText);
+				}
+			});
+		});
+
+		$("#callBankList").click(function() {
+			$.ajax({
+				url : "/f/bankList",
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$('#bankListValue').val(JSON.stringify(data, null, '\t'));
+				},
+				error : function(e) {
+					console.log(e.responseText);
+				}
+			});
+		});
+
+		$("#callSumPerBankPerYear").click(function() {
+			$.ajax({
+				url : "/f/sumPerBankPerYear",
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$('#sumPerBankPerYearValue').val(JSON.stringify(data, null, '\t'));
+					var total = getlength2(data, 0);
+				},
+				error : function(e) {
+					console.log(e.responseText);
+				}
+			});
+		});
+
+		$("#callMaxPerData").click(function() {
+			$.ajax({
+				url : "/f/maxPerData",
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$('#maxPerDataValue').val(JSON.stringify(data, null, '\t'));
+					var total = getlength2(data, 0);
+				},
+				error : function(e) {
+					console.log(e.responseText);
+				}
+			});
+		});
+
+		$("#callMaxMinForKeb").click(function() {
+			$.ajax({
+				url : "/f/maxMinForKeb",
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$('#maxMinForKebValue').val(JSON.stringify(data, null, '\t'));
+				},
+				error : function(e) {
+					console.log(e.responseText);
+				}
+			});
+		});
+
+		$("#approximateAmount").click(function() {
+			$.ajax({
+				url : "/f/approximateAmount",
+				data : {
+					  "bank" : $('#approximateAmountBank').val(),
+					  "month" : $('#approximateAmountMonth').val()
+					},
+				dataType : "json",
+				success : function(data) {
+					console.log(data);
+					$('#approximateAmountValue').val(JSON.stringify(data, null, '\t'));
+				},
+				error : function(e) {
+					console.log(e.responseText);
+				}
+			});
+		});
+	});
+</script>
+<body>
+
+<div class="container">
+
+	<div class="masthead">
+		<h3 class="text-muted">
+<!--			<img src="./image/favicon.ico" alt="kakaopay" style="width: 50px">-->
+			<img src="http://www.fintechpost.co.kr/news/photo/201806/1507_1528067699_1.png" alt="kakaopay" style="width: 50px">
+			KakaoPay 사전 과제 전형
+		</h3>
+		<nav>
+			<ul class="nav nav-justified">
+				<!--<li class="active"><a href="#">Home</a></li>
+				<li><a href="#">Projects</a></li>
+				<li><a href="#">Services</a></li>
+				<li><a href="#">Downloads</a></li>
+				<li><a href="#">About</a></li>
+				<li><a href="#">Contact</a></li>-->
+			</ul>
+		</nav>
+	</div>
+
+	<!-- Jumbotron -->
+	<div class="jumbotron">
+		<h1>주택금융 서비스 API</h1>
+		<p class="lead">본 서비스는 국내 주택금융 신용보증기관으로부터 제공받은 년도별 각 금융기관(은행)에서 신용보증한 금액에 대한 데이터를 기반으로</p>
+		<p class="lead">주택금융 공급기관(은행)의 지원금액 관련 통계 데이터를 JSON 형태로 반환해주는 API입니다.</p>
+		<p><a class="btn btn-lg btn-success" id="callInsert" role="button">데이터저장</a></p>
+		<div id="insertSuccess" style="visibility:hidden;">success</div>
+	</div>
+
+	<!-- 기본문제_(2) : /f/bankList -->
+	<div class="row">
+		<div class="col-lg-12 col-sm-6" >
+			<h2>주택금융 공급 금융기관(은행) 목록을 출력하는 API</h2>
+			<p><a class="btn btn-primary" id="callBankList" role="button">Call API</a></p>
+			<textarea class="col-lg-12" rows="10" id="bankListValue"></textarea>
+		</div>
+	</div>
+
+	<!-- 기본문제_(3) : /f/sumPerBankPerYear -->
+	<div class="row">
+		<div class="col-lg-12">
+			<h2>년도별 각 금융기관의 지원금액 합계를 출력하는 API</h2>
+			<p class="text-danger">특정 은행의 특정 달에 대해서 2018년도 해당 달에 금융지원 금액을 예측하는 API 개발</p>
+			<p><a class="btn btn-primary" id="callSumPerBankPerYear" role="button">Call API</a></p>
+			<textarea class="col-lg-12" rows="10" id="sumPerBankPerYearValue"></textarea>
+		</div>
+	</div>
+
+	<!-- 기본문제_(4) : /f/maxPerData -->
+	<div class="row">
+		<div class="col-lg-12">
+			<h2>각 년도별 각 기관의 전체 지원금액 중에서 가장 큰 금액의 기관명을 출력하는 API</h2>
+			<p class="text-danger">예를들어, 2005년 ~2017년 중에 2010년 국민은행의 전체 지원금액(1월~12월 지원 합계)이 가장 높았다면 { “year": “2010” , "bank": “국민은행”}을 결과로 출력합니다. </p>
+			<p><a class="btn btn-primary" id="callMaxPerData" role="button">Call API</a></p>
+			<textarea class="col-lg-12" rows="10" id="maxPerDataValue"></textarea>
+		</div>
+	</div>
+
+	<!-- 기본문제_(5) : /f/maxMinForKeb -->
+	<div class="row">
+		<div class="col-lg-12">
+			<h2>전체 년도(2005~2016)에서 외환은행의 지원금액 평균 중에서 가장 작은 금액과 큰 금액을 출력하는 API 개발 </h2>
+			<p class="text-danger">예를들어, 2005년 ~ 2016년 외환은행의 평균 지원금액 (매년 12달의 지원금액 평균값)을 계산하여 가장 작은 값과 큰 값을 출력합니다. 소수점 이하는 반올림해서 계산하세요. </p>
+			<p><a class="btn btn-primary" id="callMaxMinForKeb" role="button">Call API</a></p>
+			<textarea class="col-lg-12" rows="10" id="maxMinForKebValue"></textarea>
+		</div>
+	</div>
+
+	<!-- 추가문제 : /f/approximateAmount -->
+<!--	<div class="row">-->
+<!--		<div class="col-lg-12">-->
+<!--			<h2>특정 은행의 특정 달에 대해서 2018년도 해당 달에 금융지원 금액을 예측하는 API 개발 </h2>-->
+<!--			<p>단, 예측 알고리즘을 무엇을 써야하는지에 대한 제약은 없지만, 가장 근사치에 가까울 수록 높은 점수 부여</p>-->
+<!--			<div class="col-lg-4">-->
+<!--				<input type="text" id="approximateAmountBank" class="form-control" placeholder="은행명">-->
+<!--			</div>-->
+<!--			<div class="col-lg-4">-->
+<!--				<input type="text" id="approximateAmountMonth" class="form-control" placeholder="월수">-->
+<!--			</div>-->
+
+<!--			<p><a class="btn btn-primary" id="approximateAmount" role="button">Call API</a></p>-->
+<!--			<textarea class="col-lg-12" rows="10" id="approximateAmountValue"></textarea>-->
+<!--		</div>-->
+<!--	</div>-->
+</div>
+
+<div class="footer" style="height: 200px">
+
+
+</div>
+</body>
+</html>
